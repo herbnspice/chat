@@ -4,30 +4,41 @@
     <form @submit.prevent="handleSubmit">
         <input type="text" required placeholder="Email" v-model="email">
         <input type="password" required placeholder="password" v-model="password">
-        <button> Sign up </button>
+        <button> Login </button>
     </form> 
+    <div class="error" v-if="error"> {{ error }} </div>
   </div>
 </template>
 <script>
 import { ref } from 'vue'
+import useLogin from '@/composables/useLogin'
 export default {
-    setup(){
+    setup( props, context ){
         const email = ref('')
         const password = ref('')
-
-        const handleSubmit = () => {
-            console.log( email, password, handleSubmit )
+        
+        const { error, login } = useLogin()
+        const handleSubmit = async () => {
+            await login( email.value, password.value )
+            if( !error.value ){
+                context.emit('enterChatroom')
+            }
         }
-        return { email,  password, handleSubmit }
+        return { email, password, handleSubmit, error }
     }
 }
 </script>
 
-<style>
-body{
-    background: #fff;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
+<style scoped>
+
+    .error{
+        padding:20px;
+        border-radius: 4px;
+        margin:10px 0px;
+        background: #ff0000;
+        color: #fff;
+
+    }
     .card{
         width: 360px;
         margin:  150px auto;
