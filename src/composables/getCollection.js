@@ -1,4 +1,5 @@
 import { ref } from "@vue/reactivity";
+import { watchEffect } from "@vue/runtime-core";
 import { projectFirestore } from "../firebase/config";
 
 const getCollection = ( collection ) =>{
@@ -9,8 +10,9 @@ const getCollection = ( collection ) =>{
     let collectionRef = projectFirestore.collection( collection )
         .orderBy( 'createdAt' )
         
-    collectionRef.onSnapshot( ( snap ) => {
+    const unsub = collectionRef.onSnapshot( ( snap ) => {
         let results = []
+        console.log( 'snap')
         snap.docs.forEach( doc => {
             doc.data().createdAt && results.push( { ...doc.data(), id : doc.data().id } )
         })
@@ -22,8 +24,16 @@ const getCollection = ( collection ) =>{
         error.value = err.message
     })
 
+    watchEffect( (onInvalidate)=> {
+        onInvalidate(()=> {
+            unsub() 
+        })
+    })
+    
     return { document, error }
 
 }
+
+
 
 export default getCollection 

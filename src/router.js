@@ -1,8 +1,7 @@
 import { createWebHistory, createRouter  } from "vue-router";
 import { porjectAuthentication } from "./firebase/config";
 
-
-// auth guar
+// auth guard
 const requiredAuth  = ( to, from, next ) => {
     let user = porjectAuthentication.currentUser
     if( !user ){
@@ -10,11 +9,20 @@ const requiredAuth  = ( to, from, next ) => {
     }
     next()
 }
+const requireNoAuth = ( to, from, next ) => {
+    let user = porjectAuthentication.currentUser
+    if( user ){
+        next({ name: 'Chatroom'})
+    }
+    next()
+}
+
 const routes = [
     {
         path: "/",
         name: "Welcome",
-        component: () => import(/* webpackChunkName: "about" */ '@/views/Welcome.vue')
+        component: () => import(/* webpackChunkName: "about" */ '@/views/Welcome.vue'),
+        beforeEnter: requireNoAuth
     },
     {
         path: "/chatroom",
