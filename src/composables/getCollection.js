@@ -24,12 +24,13 @@ const getCollection = ( collection ) =>{
         error.value = err.message
     })
 
+  // Remove invalidate snapchats
     watchEffect( (onInvalidate)=> {
         onInvalidate(()=> {
             unsub() 
         })
     })
-    
+
     return { document, error }
 
 }
